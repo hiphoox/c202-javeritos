@@ -1,11 +1,12 @@
-defmodule Xenon.MixProject do
+defmodule XENON.MixProject do
   use Mix.Project
 
   def project do
     [
       app: :xenon,
       version: "0.1.0",
-      elixir: "~> 1.10",
+      elixir: "~> 1.7",
+      escript: [main_module: XENON],
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
