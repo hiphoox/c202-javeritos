@@ -152,7 +152,7 @@ defmodule Parser do
 
       _ ->
         line = line(tokenListF)
-        {{:error, "*********ERROR AT #{line}: expect an int"}, tokenListF}
+        {{:error, "*********ERROR AT #{line}: expect an int value"}, tokenListF}
     end
   end
 end
