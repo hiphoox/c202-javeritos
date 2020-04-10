@@ -10,7 +10,10 @@ defmodule Lexer do
       {:rBrace},
       {:lParen},
       {:rParen},
-      {:semicolon}
+      {:semicolon},
+      {:operator, :negation},
+      {:operator, :logicalNeg},
+      {:operator, :bitWise}
     ]
     mappedKeyW = fn a -> {tokenToStr(a), a} end
     keywords=Enum.map(tokens,mappedKeyW)
@@ -26,7 +29,6 @@ defmodule Lexer do
 
     cond do
       lexicon == "" ->
-        IO.puts ("Lexing done!")
         []
 
       Regex.match?(spaces, lexicon) -> #Boolean
@@ -97,6 +99,13 @@ defmodule Lexer do
          "return " #  return
       {:ident, :mainKeyWord} ->
         "main" #  main
+      #Unary type
+      {:operator, :negation} ->
+        "-"
+      {:operator, :logicalNeg} ->
+        "! "
+      {:operator, :bitWise} ->
+        "~"
       {:lBrace} ->
          "{"
       {:rBrace} ->
