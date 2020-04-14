@@ -103,7 +103,7 @@ defmodule Lexer do
       {:operator, :negation} ->
         "-"
       {:operator, :logicalNeg} ->
-        "! "
+        "!"
       {:operator, :bitWise} ->
         "~"
       {:lBrace} ->
