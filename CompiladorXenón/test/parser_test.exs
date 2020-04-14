@@ -409,6 +409,35 @@ test "BIT WISE" do
 
 #OPERADORES UNARIO INVALIDOS
 
+test "missing const" do
+  ast= Lexer.lexing("int main() {
+  return ! ;
+}")
+  assert Parser.parse_program(ast) == {:error, "*********ERROR AT 2: expect an int value"}
+end
 
+test "missing semicolon" do
+  ast= Lexer.lexing("int main() {
+  return !5
+}")
+  assert Parser.parse_program(ast) == {:error,
+           "*********ERROR AT 3: semicolon missed after constant to finish return statement "}
+end
+
+test "nested missing const" do
+  ast= Lexer.lexing("int main() {
+  return !~;
+}")
+  assert Parser.parse_program(ast) ==  {:error, "*********ERROR AT 2: expect an int value"}
+end
+
+
+test "wrong order" do
+  ast= Lexer.lexing("int main() {
+  return 4-;
+}")
+
+  assert Parser.parse_program(ast) == {:error, "*********ERROR AT 2: semicolon missed after constant to finish return statement "}
+end
 
 end
