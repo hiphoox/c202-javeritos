@@ -1,6 +1,7 @@
 defmodule Parser do
   # ------------------PARSER PROGRAM--------------------
   def parse_program(tokenList) do
+
     test = next(tokenList) #Get the next KeyWord
     tokenListF = List.delete_at(tokenList, 0) #Deleting the head
     function = parse_function(test, tokenListF) #Make matching of C function strcture
@@ -145,14 +146,63 @@ defmodule Parser do
     first = Tuple.to_list(hd(tokenListF))
     test = List.last(first)
 
+
+
     case {nextToken, test} do
       {:num, numero} ->
         tokenListF = List.delete_at(tokenListF, 0)
         {%AST{node_name: :constant, value: numero}, tokenListF}
 
+
+      {:operator, _} ->
+        parse_unary(tokenListF)
       _ ->
         line = line(tokenListF)
         {{:error, "*********ERROR AT #{line}: expect an int value"}, tokenListF}
+    end
+
+
+  end
+
+  def parse_unary(tokenListF) do
+    nextToken = next(tokenListF)
+    first= Tuple.to_list(hd(tokenListF))
+    test= List.last(first)
+
+    case {nextToken, test} do
+
+      {:operator, [:negation]} ->
+        tokenListF= List.delete_at(tokenListF, 0)
+        {tree, last} = parse_expression(tokenListF)
+
+        case {tree, last} do
+          {{:error, error_message}, tokenListF} ->
+            {{:error, error_message}, tokenListF}
+
+          _ -> {%AST{node_name: :unary, value: :negation, left_node: tree}, last}
+        end
+
+      {:operator, [:logicalNeg]} ->
+         tokenListF = List.delete_at(tokenListF, 0)
+         {tree, last}= parse_expression(tokenListF)
+        case {tree, last} do
+          {{:error, error_message}, tokenListF} ->
+             {{:error, error_message}, tokenListF}
+          _ -> {%AST{node_name: :unary, value: :logicalNeg, left_node: tree}, last}
+        end
+
+      {:operator, [:bitWise]} ->
+        tokenListF= List.delete_at(tokenListF, 0)
+        {tree, last}= parse_expression(tokenListF)
+
+        case {tree, last} do
+          {{:error, error_message}, tokenListF} ->
+            {{:error, error_message}, tokenListF}
+          _ -> {%AST{node_name: :unary, value: :bitWise, left_node: tree}, last}
+        end
+      _ ->
+        line= line(tokenListF)
+        {{:error, "*********ERROR AT #{line}: expect an unary expression"}, tokenListF}
     end
   end
 end
