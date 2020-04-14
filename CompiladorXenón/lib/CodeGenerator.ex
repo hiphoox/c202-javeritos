@@ -18,6 +18,7 @@ defmodule CodeGenerator do
     end
   end
 
+  @spec emit_code(:constant | :function | :program | :return, any, any) :: <<_::8, _::_*8>>
   def emit_code(:program, code_snippet, _) do
     """
         .section        __TEXT,__text,regular,pure_instructions
@@ -35,13 +36,38 @@ defmodule CodeGenerator do
   end
 
   def emit_code(:return, code_snippet, _) do
+    code_snippet <>
     """
-        movl    #{code_snippet}, %eax
         ret
     """
   end
 
   def emit_code(:constant, _code_snippet, value) do
-    "$#{value}"
+    """
+    movl    #{value}, %eax
+    """
+  end
+
+  def emit_code(:unary, code_snippet, :negation) do
+    code_snippet <>
+      """
+      neg    %eax
+      """
+  end
+
+  def emit_code(:unary, code_snippet, :logicalNeg) do
+    code_snippet <>
+      """
+      cmpl   $0, %eax
+      movl   $0, %eax
+      sete   %al
+      """
+  end
+
+  def emit_code(:unary, code_snippet, :bitWise) do
+    code_snippet <>
+      """
+      not    %rax
+      """
   end
 end
