@@ -13,7 +13,10 @@ defmodule Lexer do
       {:semicolon},
       {:operator, :negation},
       {:operator, :logicalNeg},
-      {:operator, :bitWise}
+      {:operator, :bitWise},
+      {:operator, :addition},
+      {:operator, :division},
+      {:operator, :multiplication}
     ]
     mappedKeyW = fn a -> {tokenToStr(a), a} end
     keywords=Enum.map(tokens,mappedKeyW)
@@ -62,7 +65,7 @@ defmodule Lexer do
                 ]
             end
 
-          # If there's no match, surely must be a string
+          # If there's no match
 
           Regex.match?(alphabet, lexicon) ->
             identify = List.first(Regex.run(alphabet, lexicon, [{:capture, :first}])) #Run the regex vs the lexicon and return the matches
@@ -106,6 +109,14 @@ defmodule Lexer do
         "!"
       {:operator, :bitWise} ->
         "~"
+      #Binary types
+      {:operator, :addition} ->
+        "+"
+      {:operator, :division} ->
+         "/"
+      {:operator, :multiplication} ->
+         "*"
+      #Program Syntax Type
       {:lBrace} ->
          "{"
       {:rBrace} ->
