@@ -138,29 +138,148 @@ defmodule Parser do
     end
   end
 
-  # ----------------PARSER EXPRESSION--------------------
+   # ----------------PARSER EXPRESSION--------------------
    #Try to make matching with a C expression structure
    #Only verify a constant expression
-  def parse_expression(tokenListF) do
+   def parse_expression(tokenListF) do
+    binary= parse_binary(tokenListF)
+    binary
+
+
+
+
+
+
+  end
+
+
+  def parse_binary(tokenListF) do
+    term= parse_term(tokenListF)
+    {expression_mode, rest} = term
+    [nextToken | rest]= rest  #CHANGE
+
+    first= Tuple.to_list(nextToken)
+    test= List.last(first)
+
+    case term do
+      {{:error, error_message}, tokenListF} ->
+        {{:error, error_message}, tokenListF}
+
+      _->
+        case test do
+          [:addition] ->
+            term_op= parse_expression(rest)
+
+            case term_op do
+              {{:error, error_message}, tokenListF} ->
+                {{:error, error_message}, tokenListF}
+              _->
+                {node, tokenListF} = term_op
+                {%AST{node_name: :binary, value: :addition, left_node: expression_mode, right_node: node}, tokenListF}
+            end
+          [:negation] ->
+            term_op= parse_expression(rest)
+
+            case term_op do
+              {{:error, error_message}, tokenListF} ->
+                {{:error, error_message}, tokenListF}
+              _->
+                {node, tokenListF} = term_op
+                {%AST{node_name: :binary, value: :negation, left_node: expression_mode, right_node: node}, tokenListF}
+            end
+          _->
+            term
+        end
+    end
+
+
+  end
+
+  def parse_term(tokenListF) do
+    factor= parse_factor(tokenListF)
+
+    {expression_node, rest}= factor
+    [nextToken | _] = rest
+
+    first= Tuple.to_list(nextToken)
+    test= List.last(first)
+
+    case factor do
+      {{:error, error_message}, tokenListF} ->
+        {{:error, error_message}, tokenListF}
+
+      _ ->
+        case test do
+          [:multiplication] ->
+            tokenListF= List.delete_at(rest, 0)
+            term_op= parse_expression(tokenListF)
+
+            case term_op do
+              {{:error, error_message}, tokenListF} ->
+                {{:error, error_message}, tokenListF}
+
+              _->
+                {node, tokenListF}= term_op
+                {%AST{node_name: :binary, value: :multiplication, left_node: expression_node, right_node: node}, tokenListF}
+            end
+          [:division] ->
+            tokenListF= List.delete_at(rest, 0)
+            term_op= parse_expression(tokenListF)
+            case term_op do
+              {{:error, error_message}, tokenListF} ->
+                {{:error, error_message}, tokenListF}
+
+              _->
+                {node, tokenListF}= term_op
+                {%AST{node_name: :binary, value: :division, left_node: expression_node, right_node: node}, tokenListF}
+            end
+            _->
+              factor
+        end
+    end
+  end
+
+
+  def parse_factor(tokenListF) do
     nextToken = next(tokenListF)
     first = Tuple.to_list(hd(tokenListF))
     test = List.last(first)
-
-
-
     case {nextToken, test} do
+      {{:error, error_message}, tokenListF} ->
+        {{:error, error_message}, tokenListF}
+
       {:num, numero} ->
         tokenListF = List.delete_at(tokenListF, 0)
         {%AST{node_name: :constant, value: numero}, tokenListF}
 
+      {:lParen, []} ->
+        tokenListF = List.delete_at(tokenListF, 0)
+        expression= parse_expression(tokenListF)
 
+        case expression do
+          {{:error, error_message}, tokenListF} ->
+            {{:error, error_message}, tokenListF}
+
+          {expression_node, tokenListF} ->
+            [nextToken | rest]= tokenListF
+            first= Tuple.to_list(nextToken)
+            test= List.first(first)
+            if test== :rParen do
+              {expression_node, rest}
+            else
+              sec_expression= parse_expression(tokenListF)
+              {node_expression, _} = expression
+              {node, rest} = sec_expression
+              [_ | no_OpenParentesis_list] = rest
+              [%{node_expression | left_node: node}, no_OpenParentesis_list]
+            end
+        end
       {:operator, _} ->
         parse_unary(tokenListF)
       _ ->
         line = line(tokenListF)
         {{:error, "*********ERROR AT #{line}: expect an int value"}, tokenListF}
     end
-
 
   end
 
