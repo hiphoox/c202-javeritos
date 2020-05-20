@@ -2,19 +2,31 @@ defmodule CodeGenerator do
 
 
   def generate_code(ast) do
-    code = post_order(ast)
+    code = post_order(ast," ")
     code
   end
 
-  def post_order(node) do
+  def post_order(node, code_snippet) do
     case node do
       nil ->
-        nil
+        ""
 
       ast_node ->
-        code_snippet = post_order(ast_node.left_node)
-        post_order(ast_node.right_node)
-        emit_code(ast_node.node_name, code_snippet, ast_node.value)
+
+        if ast_node.node_name == :constant do
+          emit_code(:constant, code_snippet, ast_node.value)
+        else
+
+          emit_code(
+            ast_node.node_name,
+            post_order(ast_node.left_node, code_snippet) <>
+            pushOp(ast_node) <>
+            post_order(ast_node.right_node, code_snippet) <>
+            popOp(ast_node),
+            ast_node.value
+            )
+
+        end
     end
   end
 
@@ -69,5 +81,69 @@ defmodule CodeGenerator do
       """
       not    %rax
       """
+  end
+
+
+
+  # OPERADORES BINARIOS
+
+  def emit_code(:binary, code_snippet, :addition) do
+    code_snippet <>
+      """
+      pop     %rax
+      add     %rax, %rcx
+      """
+  end
+
+  def emit_code(:binary, code_snippet, :negation) do
+    code_snippet <>
+      """
+      sub    %rax, %rbx
+      mov    %rbx, %rax
+      """
+  end
+
+  def emit_code(:binary, code_snippet, :multiplication) do
+    code_snippet <>
+      """
+      imul   %rbx, %rax
+      """
+  end
+
+  def emit_code(:binary, code_snippet, :division) do
+    code_snippet <>
+      """
+      push   %rax
+      mov    %rbx, %rax
+      pop    %rbx
+      cqo
+      idivq  %rbx
+      """
+  end
+
+
+
+  def pushOp(ast_node) do
+
+      if ast_node.node_name == :unary and ast_node.value == :negation and ast_node.right_node == nil do
+        """
+        _NEG
+        """
+      else
+        """
+        push    %rax
+        """
+      end
+  end
+
+  def popOp(ast_node) do
+
+      if ast_node.node_name == :unary and ast_node.value == :negation and ast_node.right_node == nil do
+        ""
+      else
+        """
+        pop    %rbx
+        """
+      end
   end
 end
