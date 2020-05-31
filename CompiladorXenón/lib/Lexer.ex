@@ -116,6 +116,25 @@ defmodule Lexer do
          "/"
       {:operator, :multiplication} ->
          "*"
+
+      #Binary types part II
+    {:operator, :logicalAnd} ->
+      "&&"
+    {:operator, :orlog} ->
+      "||"
+    {:operator, :EqualTo} ->
+       "=="
+    {:operator, :NotEqual} ->
+       "!="
+    {:operator, :LessThan} ->
+       "<"
+    {:operator, :LessOrEqual} ->
+       "<="
+    {:operator, :Greather} ->
+      ">"
+    {:operator, :GreatherOrEqual} ->
+      ">="
+
       #Program Syntax Type
       {:lBrace} ->
          "{"
