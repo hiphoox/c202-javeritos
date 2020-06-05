@@ -16,7 +16,15 @@ defmodule Lexer do
       {:operator, :bitWise},
       {:operator, :addition},
       {:operator, :division},
-      {:operator, :multiplication}
+      {:operator, :multiplication},
+      {:operator, :logicalAnd},
+      {:operator, :orlog},
+      {:operator, :EqualTo},
+      {:operator, :NotEqual},
+      {:operator, :LessThan},
+      {:operator, :LessOrEqual},
+      {:operator, :Greather},
+      {:operator, :GreatherOrEqual}
     ]
     mappedKeyW = fn a -> {tokenToStr(a), a} end
     keywords=Enum.map(tokens,mappedKeyW)
