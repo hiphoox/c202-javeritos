@@ -34,7 +34,7 @@ defmodule Lexer do
     numbers = ~r(^[0-9]+) #All numbers independently of the number of consecutive integers
 
 
-      #For danny:check possible OVERFLOW? Should Lexer should check for the maximum amount of consecutive integers?  or only check if the number "belongs" to the grammar?
+      #:check possible OVERFLOW? Should Lexer should check for the maximum amount of consecutive integers?  or only check if the number "belongs" to the grammar?
 
 
 
@@ -126,20 +126,20 @@ defmodule Lexer do
          "*"
 
       #Binary types part II
+    {:operator, :NotEqual} ->
+      "!="
     {:operator, :logicalAnd} ->
       "&&"
     {:operator, :orlog} ->
       "||"
     {:operator, :EqualTo} ->
        "=="
-    {:operator, :NotEqual} ->
-       "!="
     {:operator, :LessThan} ->
-       "<"
+       "< "#Watch the spaces
     {:operator, :LessOrEqual} ->
        "<="
     {:operator, :Greather} ->
-      ">"
+      "> "
     {:operator, :GreatherOrEqual} ->
       ">="
 
