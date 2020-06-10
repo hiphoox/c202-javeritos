@@ -143,7 +143,6 @@ defmodule Parser do
    #Only verify a constant expression
    def parse_expression(tokenListF) do
     logical= parse_logicalAnd(tokenListF)
-    IO.inspect(logical)
     {expression_node, rest} = logical
     [nextToken | rest ]= rest
     first= Tuple.to_list(nextToken)
