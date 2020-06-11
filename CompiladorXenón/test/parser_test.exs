@@ -614,7 +614,7 @@ test "sub" do
     }
 end
 
-test "precedence" do
+test "precedence_S" do
   ast= Lexer.lexing("int main() {
     return 2 + 3 * 4;
   }")
@@ -959,6 +959,819 @@ test "mmalformed_paren" do
     {:error,
       "*********ERROR AT 2: semicolon missed after constant to finish return statement "}
 end
+
+
+#Stage 4
+
+test "and_false" do
+  ast= Lexer.lexing("int main() {
+    return 1 && 0;
+  }")
+
+  assert Parser.parse_program(ast) ==
+  %AST{
+    left_node: %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: nil,
+            node_name: :constant,
+            right_node: nil,
+            value: 1
+          },
+          node_name: :binary,
+          right_node: %AST{
+            left_node: nil,
+            node_name: :constant,
+            right_node: nil,
+            value: 0
+          },
+          value: :logicalAnd
+        },
+        node_name: :return,
+        right_node: nil,
+        value: :return
+      },
+      node_name: :function,
+      right_node: nil,
+      value: :main
+    },
+    node_name: :program,
+    right_node: nil,
+    value: nil
+  }
+end
+
+test "and_true" do
+  ast= Lexer.lexing("int main() {
+    return 1 && -1;
+    }")
+
+  assert Parser.parse_program(ast) ==
+  %AST{
+    left_node: %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: nil,
+            node_name: :constant,
+            right_node: nil,
+            value: 1
+          },
+          node_name: :binary,
+          right_node: %AST{
+            left_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 1
+            },
+            node_name: :unary,
+            right_node: nil,
+            value: :negation
+          },
+          value: :logicalAnd
+        },
+        node_name: :return,
+        right_node: nil,
+        value: :return
+      },
+      node_name: :function,
+      right_node: nil,
+      value: :main
+    },
+    node_name: :program,
+    right_node: nil,
+    value: nil
+    }
+  end
+
+  test "eq_false" do
+    ast= Lexer.lexing("int main(){
+      return 1 == 2;
+    }")
+
+    assert Parser.parse_program(ast) == 
+    %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 1
+            },
+            node_name: :binary,
+            right_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 2
+            },
+            value: :EqualTo
+          },
+          node_name: :return,
+          right_node: nil,
+          value: :return
+        },
+        node_name: :function,
+        right_node: nil,
+        value: :main
+      },
+      node_name: :program,
+      right_node: nil,
+      value: nil
+    }  
+
+  end
+
+
+  test "eq_true" do
+    ast= Lexer.lexing("int main() {
+      return 1 == 1;
+      }")
+
+    assert Parser.parse_program(ast) ==
+    %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 1
+            },
+            node_name: :binary,
+            right_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 1
+            },
+            value: :EqualTo
+          },
+          node_name: :return,
+          right_node: nil,
+          value: :return
+        },
+        node_name: :function,
+        right_node: nil,
+        value: :main
+      },
+      node_name: :program,
+      right_node: nil,
+      value: nil
+    }
+  end
+
+  test "ge_false" do
+    ast= Lexer.lexing("int main() {
+    return 1>=2;
+    }")
+
+    assert Parser.parse_program(ast) ==
+    %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 1
+            },
+            node_name: :binary,
+            right_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 2
+            },
+            value: :GreatherOrEqual
+          },
+          node_name: :return,
+          right_node: nil,
+          value: :return
+        },
+        node_name: :function,
+        right_node: nil,
+        value: :main
+      },
+      node_name: :program,
+      right_node: nil,
+      value: nil
+    }
+  end
+
+
+  test "ge_true" do
+    ast= Lexer.lexing("int main() {
+    return 1 >= 1;
+    }")
+
+    assert Parser.parse_program(ast) ==
+    %AST{
+    left_node: %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: nil,
+            node_name: :constant,
+            right_node: nil,
+            value: 1
+          },
+          node_name: :binary,
+          right_node: %AST{
+            left_node: nil,
+            node_name: :constant,
+            right_node: nil,
+            value: 1
+          },
+          value: :GreatherOrEqual
+        },
+        node_name: :return,
+        right_node: nil,
+        value: :return
+      },
+      node_name: :function,
+      right_node: nil,
+      value: :main
+    },
+    node_name: :program,
+    right_node: nil,
+    value: nil
+  }
+  end
+
+  test "gt_false" do
+    ast= Lexer.lexing("int main() {
+    return 1 > 2;
+    }")
+
+    assert Parser.parse_program(ast) ==
+    %AST{
+    left_node: %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: nil,
+            node_name: :constant,
+            right_node: nil,
+            value: 1
+          },
+          node_name: :binary,
+          right_node: %AST{
+            left_node: nil,
+            node_name: :constant,
+            right_node: nil,
+            value: 2
+          },
+          value: :Greather
+        },
+        node_name: :return,
+        right_node: nil,
+        value: :return
+      },
+      node_name: :function,
+      right_node: nil,
+      value: :main
+    },
+    node_name: :program,
+    right_node: nil,
+    value: nil
+  }
+  end
+
+
+  test "gt_true" do
+    ast= Lexer.lexing("int main() {
+    return 1 > 0;
+    }")
+
+    assert Parser.parse_program(ast) ==
+    %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 1
+            },
+            node_name: :binary,
+            right_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 0
+            },
+            value: :Greather
+          },
+          node_name: :return,
+          right_node: nil,
+          value: :return
+        },
+        node_name: :function,
+        right_node: nil,
+        value: :main
+      },
+      node_name: :program,
+      right_node: nil,
+      value: nil
+    }
+
+  end
+
+
+
+
+
+  test "le_false" do
+    ast= Lexer.lexing("int main() {
+    return 1 <= -1;
+    }")
+
+    assert Parser.parse_program(ast) ==
+    %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 1
+            },
+            node_name: :binary,
+            right_node: %AST{
+              left_node: %AST{
+                left_node: nil,
+                node_name: :constant,
+                right_node: nil,
+                value: 1
+              },
+              node_name: :unary,
+              right_node: nil,
+              value: :negation
+            },
+            value: :LessOrEqual
+          },
+          node_name: :return,
+          right_node: nil,
+          value: :return
+        },
+        node_name: :function,
+        right_node: nil,
+        value: :main
+      },
+      node_name: :program,
+      right_node: nil,
+      value: nil
+    }
+  end
+
+
+  test "le_true" do
+    ast= Lexer.lexing("int main() {
+    return 0 <= 2;
+    }")
+
+    assert Parser.parse_program(ast) ==
+    %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 0
+            },
+            node_name: :binary,
+            right_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 2
+            },
+            value: :LessOrEqual
+          },
+          node_name: :return,
+          right_node: nil,
+          value: :return
+        },
+        node_name: :function,
+        right_node: nil,
+        value: :main
+      },
+      node_name: :program,
+      right_node: nil,
+      value: nil
+    }
+  end
+
+test "lt_false" do
+  ast= Lexer.lexing("int main() {
+    return 2 < 1;
+  }")
+
+  assert Parser.parse_program(ast) == 
+  %AST{
+    left_node: %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: nil,
+            node_name: :constant,
+            right_node: nil,
+            value: 2
+          },
+          node_name: :binary,
+          right_node: %AST{
+            left_node: nil,
+            node_name: :constant,
+            right_node: nil,
+            value: 1
+          },
+          value: :LessThan
+        },
+        node_name: :return,
+        right_node: nil,
+        value: :return
+      },
+      node_name: :function,
+      right_node: nil,
+      value: :main
+    },
+    node_name: :program,
+    right_node: nil,
+    value: nil
+  }
+  end
+
+test "lt_true" do
+  ast= Lexer.lexing("int main() {
+    return 1 < 2;
+  }")
+
+  assert Parser.parse_program(ast) ==
+  %AST{
+    left_node: %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: nil,
+            node_name: :constant,
+            right_node: nil,
+            value: 1
+          },
+          node_name: :binary,
+          right_node: %AST{
+            left_node: nil,
+            node_name: :constant,
+            right_node: nil,
+            value: 2
+          },
+          value: :LessThan
+        },
+        node_name: :return,
+        right_node: nil,
+        value: :return
+      },
+      node_name: :function,
+      right_node: nil,
+      value: :main
+    },
+    node_name: :program,
+    right_node: nil,
+    value: nil
+  }
+  end
+
+
+  test "or_false" do
+    ast= Lexer.lexing("int main() {
+    return 0 || 0;
+    }")
+
+    assert Parser.parse_program(ast) ==
+    %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 0
+            },
+            node_name: :binary,
+            right_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 0
+            },
+            value: :orlog
+          },
+          node_name: :return,
+          right_node: nil,
+          value: :return
+        },
+        node_name: :function,
+        right_node: nil,
+        value: :main
+      },
+      node_name: :program,
+      right_node: nil,
+      value: nil
+    }
+  end
+
+  test "or_true" do
+    ast= Lexer.lexing("int main() {
+    return 1 || 0;
+    }")
+
+    assert Parser.parse_program(ast) ==
+    %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 1
+            },
+            node_name: :binary,
+            right_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 0
+            },
+            value: :orlog
+          },
+          node_name: :return,
+          right_node: nil,
+          value: :return
+        },
+        node_name: :function,
+        right_node: nil,
+        value: :main
+      },
+      node_name: :program,
+      right_node: nil,
+      value: nil
+    }
+  end
+
+
+  test "precedence" do
+    ast= Lexer.lexing("int main() {
+    return 1 || 0 && 2;
+    }")
+
+    assert Parser.parse_program(ast) ==
+    %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 1
+            },
+            node_name: :binary,
+            right_node: %AST{
+              left_node: %AST{
+                left_node: nil,
+                node_name: :constant,
+                right_node: nil,
+                value: 0
+              },
+              node_name: :binary,
+              right_node: %AST{
+                left_node: nil,
+                node_name: :constant,
+                right_node: nil,
+                value: 2
+              },
+              value: :logicalAnd
+            },
+            value: :orlog
+          },
+          node_name: :return,
+          right_node: nil,
+          value: :return
+        },
+        node_name: :function,
+        right_node: nil,
+        value: :main
+      },
+      node_name: :program,
+      right_node: nil,
+      value: nil
+    }
+  end
+
+  test "precedence_2" do
+    ast= Lexer.lexing("int main() {
+    return (1 || 0) && 0;
+    }")
+
+    assert Parser.parse_program(ast) ==
+    %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: %AST{
+              left_node: %AST{
+                left_node: nil,
+                node_name: :constant,
+                right_node: nil,
+                value: 1
+              },
+              node_name: :binary,
+              right_node: %AST{
+                left_node: nil,
+                node_name: :constant,
+                right_node: nil,
+                value: 0
+              },
+              value: :orlog
+            },
+            node_name: :binary,
+            right_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 0
+            },
+            value: :logicalAnd
+          },
+          node_name: :return,
+          right_node: nil,
+          value: :return
+        },
+        node_name: :function,
+        right_node: nil,
+        value: :main
+      },
+      node_name: :program,
+      right_node: nil,
+      value: nil
+    }
+  end
+
+
+  test "precedence_3" do
+    ast= Lexer.lexing("int main() {
+    return 2 == 2 > 0;
+    }")
+
+    assert Parser.parse_program(ast) ==    
+    %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 2
+            },
+            node_name: :binary,
+            right_node: %AST{
+              left_node: %AST{
+                left_node: nil,
+                node_name: :constant,
+                right_node: nil,
+                value: 2
+              },
+              node_name: :binary,
+              right_node: %AST{
+                left_node: nil,
+                node_name: :constant,
+                right_node: nil,
+                value: 0
+              },
+              value: :Greather
+            },
+            value: :EqualTo
+          },
+          node_name: :return,
+          right_node: nil,
+          value: :return
+        },
+        node_name: :function,
+        right_node: nil,
+        value: :main
+      },
+      node_name: :program,
+      right_node: nil,
+      value: nil
+    }
+
+  end
+
+
+  test "precedence_4" do
+    ast= Lexer.lexing("int main() {
+    return 2 == 2 || 0;
+    }")
+
+    assert Parser.parse_program(ast) ==
+    %AST{
+      left_node: %AST{
+        left_node: %AST{
+          left_node: %AST{
+            left_node: %AST{
+              left_node: nil,
+              node_name: :constant,
+              right_node: nil,
+              value: 2
+            },
+            node_name: :binary,
+            right_node: %AST{
+              left_node: %AST{
+                left_node: nil,
+                node_name: :constant,
+                right_node: nil,
+                value: 2
+              },
+              node_name: :binary,
+              right_node: %AST{
+                left_node: nil,
+                node_name: :constant,
+                right_node: nil,
+                value: 0
+              },
+              value: :orlog
+            },
+            value: :EqualTo
+          },
+          node_name: :return,
+          right_node: nil,
+          value: :return
+        },
+        node_name: :function,
+        right_node: nil,
+        value: :main
+      },
+      node_name: :program,
+      right_node: nil,
+      value: nil
+    }
+  end
+
+  test "missing_first_op4" do
+    ast= Lexer.lexing("int main() {
+    return <= 2;
+    }")
+
+    assert Parser.parse_program(ast) ==
+    {:error, "*********ERROR AT 2: expect an unary expression"}
+
+  end
+
+  test "missing_mid_op" do
+    ast= Lexer.lexing("int main() {
+    return 1 < > 3;
+    }")
+
+    assert Parser.parse_program(ast) ==
+    {:error, "*********ERROR AT 2: expect an unary expression"}
+    
+  end
+
+  test "missing_second_op" do
+    ast= Lexer.lexing("int main() {
+    return 2 &&
+    }")
+
+    assert Parser.parse_program(ast) ==
+    {:error, "*********ERROR AT 3: expect an int value"}
+    
+  end
+
+    test "missing_semicolon_4" do
+    ast= Lexer.lexing("int main() {
+    return 1 || 2
+    }")
+
+    assert Parser.parse_program(ast) ==
+    {:error, "*********ERROR AT 3: semicolon missed after constant to finish return statement "}    
+  end
+  
+  
+
+
 
 
 end
