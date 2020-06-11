@@ -121,6 +121,111 @@ defmodule CodeGenerator do
       """
   end
 
+  def emit_code(:binary, code_snippet, :EqualTo) do
+    code_snippet <>
+      """
+      push %rax
+      pop %rbx
+      cmp %rax, %rbx
+      mov $0, %rax
+      sete %al
+      """
+  end
+
+  def emit_code(:binary, code_snippet, :NotEqual) do
+    code_snippet <>
+      """
+                      push %rax
+                      pop %rbx
+                      cmp %rax, %rbx
+                      mov $0, %rax
+                      setne %al
+      """
+  end
+
+  def emit_code(:binary, code_snippet, :GreatherOrEqual) do
+    code_snippet <>
+      """
+             
+                      push %rax
+                      pop %rbx
+                      cmp %rax, %rbx
+                      mov $0, %rax
+                      setge %al
+      """
+  end
+
+  def emit_code(:binary, code_snippet, :Greather) do
+    code_snippet <>
+      """
+                      push %rax
+                      pop %rbx
+                      cmp %rax, %rbx
+                      mov $0, %rax
+                      setg %al
+      """
+  end
+
+  def emit_code(:binary, code_snippet, :LessThan) do
+    code_snippet <>
+      """
+
+                      push %rax
+                      pop %rbx
+                      cmp %rax, %rbx
+                      mov $0, %rax
+                      setl %al
+      """
+  end
+
+  def emit_code(:binary, code_snippet, :LessOrEqual) do
+    code_snippet <>
+      """
+                      push %rax
+                      pop %rbx
+                      cmp %rax, %rbx
+                      mov $0, %rax
+                      setle %al
+      """
+  end
+
+  def emit_code(:binary, code_snippet, :orlog) do
+    lista_1 = Regex.scan(~r/clause_or\d{1,}/, code_snippet)
+    lista_2 = Regex.scan(~r/clause_or\d{1,}/, code_snippet)
+    num = Integer.to_string(length(lista_1) + length(lista_2) + 1)
+
+    code_snippet <>
+      """
+                      cmp $0, %rax
+                      je clause_or#{num}
+                      mov $1,%rax
+                      jmp end_or#{num}
+                  clause_or#{num}:
+                      cmp $0, %rax
+                      mov $0, %rax
+                      setne %al
+                  end_or#{num}:
+      """
+  end
+
+  def emit_code(:binary, code_snippet, :logicalAnd) do
+    lista_1 = Regex.scan(~r/clause_and\d{1,}/, code_snippet)
+    lista_2 = Regex.scan(~r/clause_and\d{1,}/, code_snippet)
+    num = Integer.to_string(length(lista_1) + length(lista_2) + 1)
+
+    code_snippet <>
+      """
+                      cmp $0, %rax
+                      jne clause_and#{num}
+                      jmp end_and#{num}
+                  clause_and#{num}:
+                      cmp $0, %rax
+                      mov $0, %rax
+                      setne %al
+                  end_and#{num}:
+      """
+  end
+
 
 
   def pushOp(ast_node) do
