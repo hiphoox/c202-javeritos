@@ -55,7 +55,7 @@ defmodule Lexer do
           {:num, columnNumber, num}
           | lexer(Regex.replace(numbers, lexicon, "", global: false), columnNumber)
         ]
-
+         
       true ->
         {result, tokenStr} = checkKW(lexicon, keywords)
 
@@ -114,7 +114,7 @@ defmodule Lexer do
       {:operator, :negation} ->
         "-"
       {:operator, :logicalNeg} ->
-        "!"
+        "! "
       {:operator, :bitWise} ->
         "~"
       #Binary types
