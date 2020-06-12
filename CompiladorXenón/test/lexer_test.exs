@@ -163,7 +163,7 @@ defmodule LexerTest do
     test "logical!" do
       tlist=Lexer.lexing(
         "int main(){
-          return !1;
+          return ! 1;
         }"
       )
       assert tlist==[

@@ -162,7 +162,7 @@ defmodule ParserTest do
 
   test "BIT WISE" do
     ast= Lexer.lexing("int main() {
-    return !12;
+    return ! 12;
     }")
     assert Parser.parse_program(ast) ==
     %AST{
@@ -261,7 +261,7 @@ defmodule ParserTest do
 
   test "nested_ops" do
     ast= Lexer.lexing("int main() {
-    return !-3;
+    return ! -3;
     }")
 
     assert Parser.parse_program(ast) ==
@@ -339,7 +339,7 @@ defmodule ParserTest do
 
   test "not five" do
     ast= Lexer.lexing("int main() {
-    return !5;
+    return ! 5;
     }")
 
     assert Parser.parse_program(ast) ==
@@ -373,7 +373,7 @@ defmodule ParserTest do
 
   test "not zero" do
     ast= Lexer.lexing("int main() {
-    return !0;
+    return ! 0;
     }")
 
     assert Parser.parse_program(ast) ==
@@ -417,7 +417,7 @@ end
 
 test "missing semicolon" do
   ast= Lexer.lexing("int main() {
-  return !5
+  return ! 5
   }")
   assert Parser.parse_program(ast) == {:error,
            "*********ERROR AT 3: semicolon missed after constant to finish return statement "}
@@ -425,7 +425,7 @@ end
 
 test "nested missing const" do
   ast= Lexer.lexing("int main() {
-  return !~;
+  return ! ~;
   }")
   assert Parser.parse_program(ast) ==  {:error, "*********ERROR AT 2: expect an int value"}
 end
@@ -1051,7 +1051,7 @@ test "and_true" do
       return 1 == 2;
     }")
 
-    assert Parser.parse_program(ast) == 
+    assert Parser.parse_program(ast) ==
     %AST{
       left_node: %AST{
         left_node: %AST{
@@ -1082,7 +1082,7 @@ test "and_true" do
       node_name: :program,
       right_node: nil,
       value: nil
-    }  
+    }
 
   end
 
@@ -1378,7 +1378,7 @@ test "lt_false" do
     return 2 < 1;
   }")
 
-  assert Parser.parse_program(ast) == 
+  assert Parser.parse_program(ast) ==
   %AST{
     left_node: %AST{
       left_node: %AST{
@@ -1635,7 +1635,7 @@ test "lt_true" do
     return 2 == 2 > 0;
     }")
 
-    assert Parser.parse_program(ast) ==    
+    assert Parser.parse_program(ast) ==
     %AST{
       left_node: %AST{
         left_node: %AST{
@@ -1747,7 +1747,7 @@ test "lt_true" do
 
     assert Parser.parse_program(ast) ==
     {:error, "*********ERROR AT 2: expect an unary expression"}
-    
+
   end
 
   test "missing_second_op" do
@@ -1757,7 +1757,7 @@ test "lt_true" do
 
     assert Parser.parse_program(ast) ==
     {:error, "*********ERROR AT 3: expect an int value"}
-    
+
   end
 
     test "missing_semicolon_4" do
@@ -1766,10 +1766,10 @@ test "lt_true" do
     }")
 
     assert Parser.parse_program(ast) ==
-    {:error, "*********ERROR AT 3: semicolon missed after constant to finish return statement "}    
+    {:error, "*********ERROR AT 3: semicolon missed after constant to finish return statement "}
   end
-  
-  
+
+
 
 
 
